@@ -73,12 +73,14 @@ For detailed architecture documentation, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Key Technologies
 
-- **flutter_bloc**: State management
+- **flutter_bloc**: State management with sealed classes
+- **freezed**: Immutable models and sealed classes with code generation
 - **get_it**: Dependency injection
 - **dartz**: Functional programming (Either type for error handling)
-- **equatable**: Value equality
+- **json_annotation**: JSON serialization annotations
 - **mocktail**: Mocking for tests
 - **bloc_test**: Testing BLoCs
+- **build_runner**: Code generation tool
 
 ## Authentication
 
@@ -118,6 +120,29 @@ Run tests with:
 ```bash
 flutter test
 ```
+
+## Code Generation
+
+The project uses **freezed** and **json_serializable** for code generation:
+
+### Generate Code
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+### Watch for Changes (Development)
+```bash
+dart run build_runner watch --delete-conflicting-outputs
+```
+
+### What Gets Generated
+
+- **Freezed Models**: Immutable data classes with copyWith, equality, and toString
+- **Sealed Classes**: Type-safe unions for events and states
+- **JSON Serialization**: Automatic fromJson/toJson methods
+- **Pattern Matching**: Exhaustive .when() and .maybeWhen() methods
+
+Generated files (*.freezed.dart, *.g.dart) are already included in the repository for convenience.
 
 ## SOLID Principles
 
