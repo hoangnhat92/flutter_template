@@ -49,7 +49,7 @@ void main() {
 
   group('SignInRequested', () {
     test('initial state should be AuthInitial', () {
-      expect(authBloc.state, equals(AuthInitial()));
+      expect(authBloc.state, const AuthState.initial());
     });
 
     blocTest<AuthBloc, AuthState>(
@@ -60,11 +60,11 @@ void main() {
         return authBloc;
       },
       act: (bloc) => bloc.add(
-        const SignInRequested(email: tEmail, password: tPassword),
+        const AuthEvent.signInRequested(email: tEmail, password: tPassword),
       ),
       expect: () => [
-        AuthLoading(),
-        const Authenticated(tUser),
+        const AuthState.loading(),
+        const AuthState.authenticated(tUser),
       ],
       verify: (_) {
         verify(() => mockSignIn(email: tEmail, password: tPassword)).called(1);
@@ -79,11 +79,11 @@ void main() {
         return authBloc;
       },
       act: (bloc) => bloc.add(
-        const SignInRequested(email: tEmail, password: tPassword),
+        const AuthEvent.signInRequested(email: tEmail, password: tPassword),
       ),
       expect: () => [
-        AuthLoading(),
-        const AuthError('Invalid credentials'),
+        const AuthState.loading(),
+        const AuthState.error('Invalid credentials'),
       ],
       verify: (_) {
         verify(() => mockSignIn(email: tEmail, password: tPassword)).called(1);
@@ -98,10 +98,10 @@ void main() {
         when(() => mockSignOut()).thenAnswer((_) async => const Right(null));
         return authBloc;
       },
-      act: (bloc) => bloc.add(SignOutRequested()),
+      act: (bloc) => bloc.add(const AuthEvent.signOutRequested()),
       expect: () => [
-        AuthLoading(),
-        Unauthenticated(),
+        const AuthState.loading(),
+        const AuthState.unauthenticated(),
       ],
       verify: (_) {
         verify(() => mockSignOut()).called(1);
@@ -115,10 +115,10 @@ void main() {
             .thenAnswer((_) async => const Left(AuthFailure('Sign out failed')));
         return authBloc;
       },
-      act: (bloc) => bloc.add(SignOutRequested()),
+      act: (bloc) => bloc.add(const AuthEvent.signOutRequested()),
       expect: () => [
-        AuthLoading(),
-        const AuthError('Sign out failed'),
+        const AuthState.loading(),
+        const AuthState.error('Sign out failed'),
       ],
       verify: (_) {
         verify(() => mockSignOut()).called(1);
@@ -133,10 +133,10 @@ void main() {
         when(() => mockGetCurrentUser()).thenAnswer((_) async => const Right(tUser));
         return authBloc;
       },
-      act: (bloc) => bloc.add(AuthStatusChecked()),
+      act: (bloc) => bloc.add(const AuthEvent.authStatusChecked()),
       expect: () => [
-        AuthLoading(),
-        const Authenticated(tUser),
+        const AuthState.loading(),
+        const AuthState.authenticated(tUser),
       ],
       verify: (_) {
         verify(() => mockGetCurrentUser()).called(1);
@@ -149,10 +149,10 @@ void main() {
         when(() => mockGetCurrentUser()).thenAnswer((_) async => const Right(null));
         return authBloc;
       },
-      act: (bloc) => bloc.add(AuthStatusChecked()),
+      act: (bloc) => bloc.add(const AuthEvent.authStatusChecked()),
       expect: () => [
-        AuthLoading(),
-        Unauthenticated(),
+        const AuthState.loading(),
+        const AuthState.unauthenticated(),
       ],
       verify: (_) {
         verify(() => mockGetCurrentUser()).called(1);
@@ -166,10 +166,10 @@ void main() {
             .thenAnswer((_) async => const Left(CacheFailure('Cache error')));
         return authBloc;
       },
-      act: (bloc) => bloc.add(AuthStatusChecked()),
+      act: (bloc) => bloc.add(const AuthEvent.authStatusChecked()),
       expect: () => [
-        AuthLoading(),
-        Unauthenticated(),
+        const AuthState.loading(),
+        const AuthState.unauthenticated(),
       ],
       verify: (_) {
         verify(() => mockGetCurrentUser()).called(1);

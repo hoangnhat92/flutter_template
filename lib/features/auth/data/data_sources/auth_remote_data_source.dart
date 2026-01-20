@@ -1,7 +1,7 @@
-import '../models/user_model.dart';
+import '../../domain/entities/user.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<UserModel> signIn({
+  Future<User> signIn({
     required String email,
     required String password,
   });
@@ -11,7 +11,7 @@ abstract class AuthRemoteDataSource {
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
-  Future<UserModel> signIn({
+  Future<User> signIn({
     required String email,
     required String password,
   }) async {
@@ -20,7 +20,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     // Mock authentication logic
     if (email.isNotEmpty && password.isNotEmpty) {
-      return const UserModel(
+      return const User(
         id: '1',
         email: 'user@example.com',
         name: 'John Doe',

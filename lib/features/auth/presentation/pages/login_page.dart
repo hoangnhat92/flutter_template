@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   void _handleSignIn() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-            SignInRequested(
+            AuthEvent.signInRequested(
               email: _emailController.text,
               password: _passwordController.text,
             ),
@@ -40,13 +40,20 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state is AuthError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
-            }
+            state.whenOrNull(
+              error: (message) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(message)),
+                );
+              },
+            );
           },
           builder: (context, state) {
+            final isLoading = state.maybeWhen(
+              loading: () => true,
+              orElse: () => false,
+            );
+
             return Padding(
               padding: const EdgeInsets.all(24.0),
               child: Form(
@@ -95,11 +102,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: state is AuthLoading ? null : _handleSignIn,
+                      onPressed: isLoading ? null : _handleSignIn,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: state is AuthLoading
+                      child: isLoading
                           ? const CircularProgressIndicator()
                           : const Text('Sign In'),
                     ),

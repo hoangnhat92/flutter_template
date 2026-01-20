@@ -14,7 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.signInUseCase,
     required this.signOutUseCase,
     required this.getCurrentUserUseCase,
-  }) : super(AuthInitial()) {
+  }) : super(const AuthState.initial()) {
     on<SignInRequested>(_onSignInRequested);
     on<SignOutRequested>(_onSignOutRequested);
     on<AuthStatusChecked>(_onAuthStatusChecked);
@@ -24,7 +24,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     SignInRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(const AuthState.loading());
 
     final result = await signInUseCase(
       email: event.email,
@@ -32,8 +32,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (user) => emit(Authenticated(user)),
+      (failure) => emit(AuthState.error(failure.message)),
+      (user) => emit(AuthState.authenticated(user)),
     );
   }
 
@@ -41,13 +41,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     SignOutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(const AuthState.loading());
 
     final result = await signOutUseCase();
 
     result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (_) => emit(Unauthenticated()),
+      (failure) => emit(AuthState.error(failure.message)),
+      (_) => emit(const AuthState.unauthenticated()),
     );
   }
 
@@ -55,13 +55,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthStatusChecked event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(const AuthState.loading());
 
     final result = await getCurrentUserUseCase();
 
     result.fold(
-      (failure) => emit(Unauthenticated()),
-      (user) => user != null ? emit(Authenticated(user)) : emit(Unauthenticated()),
+      (failure) => emit(const AuthState.unauthenticated()),
+      (user) => user != null
+          ? emit(AuthState.authenticated(user))
+          : emit(const AuthState.unauthenticated()),
     );
   }
 }

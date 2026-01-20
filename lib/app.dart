@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => di.sl<AuthBloc>()..add(AuthStatusChecked()),
+      create: (context) => di.sl<AuthBloc>()..add(const AuthEvent.authStatusChecked()),
       child: MaterialApp(
         title: 'Flutter App',
         theme: ThemeData(
@@ -22,17 +22,21 @@ class MyApp extends StatelessWidget {
         ),
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is AuthLoading) {
-              return const Scaffold(
+            return state.when(
+              initial: () => const Scaffold(
                 body: Center(
                   child: CircularProgressIndicator(),
                 ),
-              );
-            } else if (state is Authenticated) {
-              return const MainTabNavigator();
-            } else {
-              return const LoginPage();
-            }
+              ),
+              loading: () => const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              authenticated: (user) => const MainTabNavigator(),
+              unauthenticated: () => const LoginPage(),
+              error: (message) => const LoginPage(),
+            );
           },
         ),
       ),

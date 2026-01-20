@@ -1,21 +1,21 @@
-import '../models/user_model.dart';
+import '../../domain/entities/user.dart';
 
 abstract class AuthLocalDataSource {
-  Future<void> cacheUser(UserModel user);
-  Future<UserModel?> getCachedUser();
+  Future<void> cacheUser(User user);
+  Future<User?> getCachedUser();
   Future<void> clearCache();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  UserModel? _cachedUser;
+  User? _cachedUser;
 
   @override
-  Future<void> cacheUser(UserModel user) async {
+  Future<void> cacheUser(User user) async {
     _cachedUser = user;
   }
 
   @override
-  Future<UserModel?> getCachedUser() async {
+  Future<User?> getCachedUser() async {
     return _cachedUser;
   }
 

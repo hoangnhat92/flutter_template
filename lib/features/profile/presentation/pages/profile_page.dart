@@ -15,8 +15,8 @@ class ProfilePage extends StatelessWidget {
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          if (state is Authenticated) {
-            return Center(
+          return state.maybeWhen(
+            authenticated: (user) => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -27,7 +27,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    state.user.name,
+                    user.name,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -35,7 +35,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    state.user.email,
+                    user.email,
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
@@ -44,7 +44,7 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
                     onPressed: () {
-                      context.read<AuthBloc>().add(SignOutRequested());
+                      context.read<AuthBloc>().add(const AuthEvent.signOutRequested());
                     },
                     icon: const Icon(Icons.logout),
                     label: const Text('Sign Out'),
@@ -57,9 +57,9 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ],
               ),
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
+            ),
+            orElse: () => const Center(child: CircularProgressIndicator()),
+          );
         },
       ),
     );

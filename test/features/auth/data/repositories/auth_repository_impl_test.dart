@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_app/core/error/failures.dart';
 import 'package:flutter_app/features/auth/data/data_sources/auth_local_data_source.dart';
 import 'package:flutter_app/features/auth/data/data_sources/auth_remote_data_source.dart';
-import 'package:flutter_app/features/auth/data/models/user_model.dart';
 import 'package:flutter_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:flutter_app/features/auth/domain/entities/user.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -17,7 +17,7 @@ void main() {
   late MockAuthLocalDataSource mockLocalDataSource;
 
   setUpAll(() {
-    registerFallbackValue(const UserModel(
+    registerFallbackValue(const User(
       id: '1',
       email: 'test@example.com',
       name: 'Test User',
@@ -33,7 +33,7 @@ void main() {
     );
   });
 
-  const tUserModel = UserModel(
+  const tUser = User(
     id: '1',
     email: 'test@example.com',
     name: 'Test User',
@@ -48,8 +48,8 @@ void main() {
       when(() => mockRemoteDataSource.signIn(
             email: tEmail,
             password: tPassword,
-          )).thenAnswer((_) async => tUserModel);
-      when(() => mockLocalDataSource.cacheUser(tUserModel))
+          )).thenAnswer((_) async => tUser);
+      when(() => mockLocalDataSource.cacheUser(tUser))
           .thenAnswer((_) async => {});
 
       final result = await repository.signIn(
@@ -57,12 +57,12 @@ void main() {
         password: tPassword,
       );
 
-      expect(result, const Right(tUserModel));
+      expect(result, const Right(tUser));
       verify(() => mockRemoteDataSource.signIn(
             email: tEmail,
             password: tPassword,
           )).called(1);
-      verify(() => mockLocalDataSource.cacheUser(tUserModel)).called(1);
+      verify(() => mockLocalDataSource.cacheUser(tUser)).called(1);
     });
 
     test('should return AuthFailure when remote data source call fails',
@@ -127,11 +127,11 @@ void main() {
   group('getCurrentUser', () {
     test('should return cached user when available', () async {
       when(() => mockLocalDataSource.getCachedUser())
-          .thenAnswer((_) async => tUserModel);
+          .thenAnswer((_) async => tUser);
 
       final result = await repository.getCurrentUser();
 
-      expect(result, const Right(tUserModel));
+      expect(result, const Right(tUser));
       verify(() => mockLocalDataSource.getCachedUser()).called(1);
     });
 
@@ -167,7 +167,7 @@ void main() {
   group('isSignedIn', () {
     test('should return true when user is cached', () async {
       when(() => mockLocalDataSource.getCachedUser())
-          .thenAnswer((_) async => tUserModel);
+          .thenAnswer((_) async => tUser);
 
       final result = await repository.isSignedIn();
 

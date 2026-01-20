@@ -1,33 +1,17 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/user.dart';
 
-abstract class AuthState extends Equatable {
-  const AuthState();
+part 'auth_state.freezed.dart';
 
-  @override
-  List<Object?> get props => [];
-}
+@freezed
+sealed class AuthState with _$AuthState {
+  const factory AuthState.initial() = AuthInitial;
 
-class AuthInitial extends AuthState {}
+  const factory AuthState.loading() = AuthLoading;
 
-class AuthLoading extends AuthState {}
+  const factory AuthState.authenticated(User user) = Authenticated;
 
-class Authenticated extends AuthState {
-  final User user;
+  const factory AuthState.unauthenticated() = Unauthenticated;
 
-  const Authenticated(this.user);
-
-  @override
-  List<Object> get props => [user];
-}
-
-class Unauthenticated extends AuthState {}
-
-class AuthError extends AuthState {
-  final String message;
-
-  const AuthError(this.message);
-
-  @override
-  List<Object> get props => [message];
+  const factory AuthState.error(String message) = AuthError;
 }
